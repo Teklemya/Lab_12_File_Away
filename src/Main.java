@@ -47,7 +47,7 @@ public class Main
                     System.out.printf("\nLine %2d %-20s ", line_count, record);
 
                 }
-                reader.close(); // must close the file to seal it and flush buffer
+                reader.close();
                 System.out.println(" ");
                 System.out.println(" ");
                 System.out.println("File: "+ selectedFile+ " read!");
