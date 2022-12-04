@@ -1,74 +1,79 @@
 import javax.swing.*;
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import java.io.FileNotFoundException;
-
-import java.util.Scanner;
+import static java.nio.file.StandardOpenOption.CREATE;
 
 
 public class Main
-
 {
 
-    public static void main(String args[])
-
+    public static void main(String[] args)
     {
+        JFileChooser chooser = new JFileChooser();
+        File selectedFile;
+        String record = "";
+        int word_count = 0;
+        int line_count = 0;
+
+        try
+        {
+
+            File workingDirectory = new File(System.getProperty("user.dir"));
 
 
-
-        final JFileChooser file_chooser = new JFileChooser();
-
+            chooser.setCurrentDirectory(workingDirectory);
 
 
-        int returnVal = file_chooser.showOpenDialog(null);
-
-
-
-        File file=file_chooser.getSelectedFile();
-
-
-
-        int line_count=0;
-
-        int word_count=0;
-
-        int character_count=0;
-
-        String line="";
-
-        try {
-
-
-
-            Scanner read=new Scanner(file);
-
-
-
-            while(read.hasNextLine())
-
+            if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
             {
+                selectedFile = chooser.getSelectedFile();
+                Path file = selectedFile.toPath();
 
-                line=read.nextLine();
+                InputStream in =
+                        new BufferedInputStream(Files.newInputStream(file, CREATE));
+                BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(in));
+
+                String[] fields;
+
+                while (reader.ready())
+                {
+                    record = reader.readLine();
+                    line_count++;
+                    fields = record.split(" ");
+                    word_count += fields.length;
+                    System.out.printf("\nLine %2d %-20s ", line_count, record);
+
+                }
+                reader.close(); // must close the file to seal it and flush buffer
+                System.out.println(" ");
+                System.out.println(" ");
+                System.out.println("File: "+ selectedFile+ " read!");
+                System.out.println("File name: " + selectedFile.getName()) ;
+                System.out.println("The file " + selectedFile.length() + " characters in it.");
+                System.out.println("The file has " + line_count  + " lines in it.");
+                System.out.println("The file has " + word_count + " words in it.");
 
 
-                String words[]=line.split(" ");
 
-                character_count=character_count+line.length();
-
-                word_count=word_count+words.length;
-
-                line_count=line_count+1;
 
             }
-
-        } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
-
+            else
+            {
+                System.out.println("You didn't select a file!!! ... exiting.\nRun the program again and select a file.");
+            }
         }
-
-
-        System.out.printf("file name: %s \n character count: %d \n word count: %d \n line count: %d \n",file.getName(),character_count,word_count,line_count);
+        catch (FileNotFoundException e)
+        {
+            System.out.println("File not found!!!");
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
